@@ -23,3 +23,58 @@
     "noFallthroughCasesInSwitch": false
   }
 }
+
+
+/**
+docker run -d --name elasticsearch \
+  -p 9200:9200 -p 9300:9300 \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=false" \
+  -e "ES_JAVA_OPTS=-Xms256m -Xmx256m" \
+  -e "bootstrap.memory_lock=false" \
+  docker.elastic.co/elasticsearch/elasticsearch:7.17.23
+
+Unable to find image 'docker.elastic.co/elasticsearch/elasticsearch:7.17.23' locally
+7.17.23: Pulling from elasticsearch/elasticsearch
+b14b0d0a7610: Pull complete 
+e10fe6b5ed66: Pull complete 
+1f87fb839806: Pull complete 
+4ca545ee6d5d: Pull complete 
+5ba0705320e6: Pull complete 
+1cddacaa6aa2: Pull complete 
+d0db5194e183: Pull complete 
+12bacf72d6a7: Pull complete 
+c7bbb82d60c0: Pull complete 
+bae3554813b2: Pull complete 
+Digest: sha256:d10bc493488da1f2d0a46b73d0746108bafe394431476159d64dee30ff77b3fc
+Status: Downloaded newer image for docker.elastic.co/elasticsearch/elasticsearch:7.17.23
+b5c303118df2b135bcfa0586124df011953f4751d735427f88283316c8795981
+
+ curl http://localhost:9200
+{
+  "name" : "b5c303118df2",
+  "cluster_name" : "docker-cluster",
+  "cluster_uuid" : "yk3Cqf8wQdirMfWZq12jqQ",
+  "version" : {
+    "number" : "7.17.23",
+    "build_flavor" : "default",
+    "build_type" : "docker",
+    "build_hash" : "61d76462eecaf09ada684d1b5d319b5ff6865a83",
+    "build_date" : "2024-07-25T14:37:42.448799567Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.11.3",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+
+// ******************************************************************
+
+docker run -d --name kibana \
+  -p 5601:5601 \
+  -e "ELASTICSEARCH_HOSTS=http://localhost:9200" \
+  docker.elastic.co/kibana/kibana:7.17.23
+
+*/
