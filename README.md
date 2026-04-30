@@ -1,29 +1,190 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🔐 Audit & Log Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Microservice NestJS complet pour **audit**, **logs**, **alertes de sécurité** et **rapports** avec intégration **Elasticsearch** et **Kafka**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Démarrage rapide
 
-## Description
+### Prerequisites
+- Node.js 18+
+- npm / yarn
+- Docker (pour Elasticsearch et Kafka)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Installation
+
+```bash
+# Installer les dépendances
+npm install
+
+# Configurer l'environnement
+cp .env.example .env
+```
+
+### Configuration environnement (.env)
+
+```env
+PORT=3001
+NODE_ENV=development
+
+# Elasticsearch
+ELASTICSEARCH_NODE=http://localhost:9200
+ELASTICSEARCH_USER=elastic
+ELASTICSEARCH_PASS=changeme
+
+# Kafka
+KAFKA_BROKERS=localhost:9092
+```
+
+### Démarrage
+
+```bash
+# Mode développement
+npm run start:dev
+
+# Mode production
+npm run build
+npm run start:prod
+```
+
+## 📚 Documentation API (Swagger)
+
+Après démarrage du service, la documentation est disponible à :
+```
+http://localhost:3001/api-docs
+```
+
+### Fonctionnalités documentées
+
+✅ **Audit** - Créer, rechercher et récupérer les logs  
+✅ **Emergency Access** - Gérer les accès d'urgence  
+✅ **Security Alerts** - Surveiller et résoudre les alertes  
+✅ **Reports** - Générer des rapports et exports RGPD  
+✅ **Statistics** - Obtenir les statistiques d'audit
+
+## 🏗️ Architecture
+
+```
+src/
+├── main.ts                    # Point d'entrée + Swagger
+├── app.module.ts              # Module principal
+├── config/                    # Configurations
+├── common/                    # Interceptors, filters, enums
+├── infrastructure/            # Elasticsearch service
+└── modules/                   # Audit, Emergency, Alerts, Reports, Stats
+```
+
+## 🔌 Modules
+
+### Audit Module
+- **POST** `/audit/logs` - Créer un log (skip audit)
+- **POST** `/audit/logs/search` - Rechercher des logs
+- **GET** `/audit/logs/:id` - Récupérer un log
+
+### Emergency Access
+- **GET** `/audit/emergency-access/review` - Logs en attente
+- **POST** `/audit/emergency-access/:id/review` - Valider/rejeter
+
+### Security Alerts
+- **GET** `/audit/security-alerts` - Alertes actives
+- **POST** `/audit/security-alerts/:id/investigate` - Enquêter
+- **POST** `/audit/security-alerts/:id/resolve` - Résoudre
+
+### Reports
+- **POST** `/audit/reports/generate` - Générer rapport
+- **POST** `/audit/export` - Export RGPD
+
+### Statistics
+- **GET** `/audit/statistics?userId=xxx` - Statistiques
+
+## 🔄 Auto-Audit
+
+Chaque requête est automatiquement auditée (sauf création de logs) via **AuditLoggingInterceptor**.
+
+Pour exclure une route de l'audit :
+```typescript
+@SkipAudit()
+@Get('/health')
+getHealth() { ... }
+```
+
+## 📊 DTOs disponibles
+
+### CreateAuditLogDto
+```typescript
+user_id: string;
+action: AuditAction;
+resource: string;
+service_name?: string;
+status?: AuditStatus;
+timestamp?: string;
+ip_address?: string;
+user_agent?: string;
+severity?: Severity;
+metadata?: Record<string, any>;
+```
+
+### SearchLogsDto
+```typescript
+userId?: string;
+action?: AuditAction;
+resource?: string;
+dateFrom?: string;
+dateTo?: string;
+severity?: Severity;
+status?: AuditStatus;
+page?: number;
+limit?: number;
+```
+
+## 🛠️ Docker Compose (optionnel)
+
+```yaml
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.0.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+```
+
+## 📦 Packages installés
+
+```json
+{
+  "@nestjs/common": "^10.0.0",
+  "@nestjs/core": "^10.0.0",
+  "@nestjs/config": "^3.0.0",
+  "@nestjs/swagger": "^7.0.0",
+  "@nestjs/elasticsearch": "^10.0.0",
+  "@nestjs/microservices": "^10.0.0",
+  "swagger-ui-express": "^5.0.0",
+  "class-validator": "^0.14.0",
+  "class-transformer": "^0.5.0",
+  "uuid": "^9.0.0",
+  "kafkajs": "^2.2.0"
+}
+```
+
+## 🔐 Sécurité
+
+- Validation globale des DTOs
+- Exception filter global
+- Audit logging sur toutes les requêtes
+- Support des headers pour identification utilisateur (`x-user-id`)
+
+## 📝 License
+
+MIT
 
 ## Project setup
 
