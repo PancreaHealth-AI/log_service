@@ -8,8 +8,8 @@ export class ReportsService {
 
   async generate(dto: GenerateReportDto) {
     const must: any[] = [];
-    if (dto.userId) must.push({ term: { user_id: dto.userId } });
-    if (dto.action) must.push({ term: { action: dto.action } });
+    if (dto.userId) must.push({ term: { 'user_id': dto.userId } });
+    if (dto.action) must.push({ term: { 'action': dto.action } });
     if (dto.dateFrom || dto.dateTo) {
       const range: any = {};
       if (dto.dateFrom) range.gte = dto.dateFrom;

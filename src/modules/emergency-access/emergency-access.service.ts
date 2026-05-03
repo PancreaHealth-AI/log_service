@@ -12,8 +12,8 @@ export class EmergencyAccessService {
     const query = {
       bool: {
         must: [
-          { term: { action: 'EMERGENCY_ACCESS' } },
-          { term: { status: 'PENDING' } },
+          { term: { 'action': 'EMERGENCY_ACCESS' } },
+          { term: { 'status': 'PENDING' } },
         ],
       },
     };

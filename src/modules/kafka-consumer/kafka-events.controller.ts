@@ -6,23 +6,23 @@ import { KafkaConsumerService } from './kafka-consumer.service';
 export class KafkaEventsController {
   constructor(private readonly consumer: KafkaConsumerService) {}
 
-  @EventPattern('auth.events')
+  @EventPattern('logs-auth')
   async authEvents(@Payload() message) {
-    await this.consumer.handleIncomingMessage('auth.events', message);
+    await this.consumer.handleIncomingMessage('logs-auth', message);
   }
 
-  @EventPattern('medical.events')
+  @EventPattern('logs-medical')
   async medicalEvents(@Payload() message) {
-    await this.consumer.handleIncomingMessage('medical.events', message);
+    await this.consumer.handleIncomingMessage('logs-medical', message);
   }
 
-  @EventPattern('access.events')
+  @EventPattern('logs-access')
   async accessEvents(@Payload() message) {
-    await this.consumer.handleIncomingMessage('access.events', message);
+    await this.consumer.handleIncomingMessage('logs-access', message);
   }
 
-  @EventPattern('system.events')
+  @EventPattern('logs-system')
   async systemEvents(@Payload() message) {
-    await this.consumer.handleIncomingMessage('system.events', message);
+    await this.consumer.handleIncomingMessage('logs-system', message);
   }
 }

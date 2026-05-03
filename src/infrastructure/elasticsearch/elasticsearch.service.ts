@@ -23,13 +23,14 @@ export class ElasticsearchService implements OnModuleInit {
     });
   }
 
-  async search(params: { index: string; query: any; size?: number; from?: number }) {
+  async search(params: { index: string; query: any; size?: number; from?: number; aggs?: any }) {
     return this.esClient.search({
       index: params.index,
-      size: params.size || 20,
+      size: params.size ?? 20,
       from: params.from || 0,
       body: {
         query: params.query,
+        ...(params.aggs ? { aggs: params.aggs } : {}),
       },
     } as any);
   }

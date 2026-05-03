@@ -9,7 +9,7 @@ export class SecurityAlertsService {
   constructor(private readonly elastic: ElasticsearchService) {}
 
   async getActive() {
-    const query = { bool: { must: [{ term: { status: 'ACTIVE' } }] } };
+    const query = { bool: { must: [{ term: { 'status': 'ACTIVE' } }] } };
     const result = await this.elastic.search({ index: this.index, query });
     return ((result as any).hits?.hits || []).map((h: any) => h._source);
   }

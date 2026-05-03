@@ -13,26 +13,48 @@ export class AuditService {
   constructor(private readonly elastic: ElasticsearchService) {}
 
   async createLog(dto: CreateAuditLogDto) {
+    const logId = uuid();
     const doc = {
-      id: uuid(),
+      id: logId,
       ...dto,
       timestamp: dto.timestamp || new Date().toISOString(),
       service_name: dto.service_name || 'external',
       status: dto.status || AuditStatus.SUCCESS,
       severity: dto.severity || 'INFO',
     };
-    await this.elastic.index({ index: this.index, document: doc });
+
+    // Indexer dans l'index principal
+    await this.elastic.index({ index: this.index, document: doc, id: logId });
+
+    // Si c'est critique, créer une alerte de sécurité automatique
+    if (doc.severity === 'CRITICAL' || doc.severity === 'ERROR') {
+      await this.elastic.index({
+        index: 'security_alerts',
+        document: {
+          id: uuid(),
+          log_id: logId,
+          timestamp: doc.timestamp,
+          severity: doc.severity,
+          action: doc.action,
+          user_id: doc.user_id,
+          status: 'ACTIVE',
+          description: `Alerte automatique : ${doc.action} sur ${doc.resource}`,
+          metadata: doc.metadata,
+        },
+      });
+    }
+
     return doc;
   }
 
   async searchLogs(searchDto: SearchLogsDto) {
     const { userId, action, resource, dateFrom, dateTo, severity, status, page = 1, limit = 20 } = searchDto;
     const must: any[] = [];
-    if (userId) must.push({ term: { user_id: userId } });
-    if (action) must.push({ term: { action } });
-    if (resource) must.push({ term: { resource } });
-    if (severity) must.push({ term: { severity } });
-    if (status) must.push({ term: { status } });
+    if (userId) must.push({ term: { 'user_id': userId } });
+    if (action) must.push({ term: { 'action': action } });
+    if (resource) must.push({ term: { 'resource': resource } });
+    if (severity) must.push({ term: { 'severity': severity } });
+    if (status) must.push({ term: { 'status': status } });
     if (dateFrom || dateTo) {
       const range: any = {};
       if (dateFrom) range.gte = dateFrom;

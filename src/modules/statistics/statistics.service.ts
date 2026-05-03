@@ -12,16 +12,19 @@ export class StatisticsService {
       severity: { terms: { field: 'severity' } },
       status: { terms: { field: 'status' } },
     };
-    const query: any = { match_all: {} };
+
+    let query: any = { match_all: {} };
     if (userId) {
-      query.bool = { must: [{ term: { user_id: userId } }] };
+      query = { term: { 'user_id': userId } };
     }
+
     const result = await this.elastic.search({
       index: 'audit_logs',
       query,
       size: 0,
-      body: { aggs }, // Elasticsearch typings
-    } as any);
+      aggs,
+    });
+
     return (result as any).aggregations || {};
   }
 }

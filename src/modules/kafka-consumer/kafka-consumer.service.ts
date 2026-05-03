@@ -35,7 +35,9 @@ export class KafkaConsumerService implements OnModuleDestroy {
   }
 
   async handleIncomingMessage(topic: string, message: any) {
-    const event = message.value || message; // selon serialisation
+    const event = message.value || message;
+    this.logger.log(`📥 Message received from Kafka [${topic}]: ${event.action} for ${event.resource}`);
+    
     await this.auditService.createLog({
       user_id: event.userId,
       action: event.action,
@@ -43,7 +45,7 @@ export class KafkaConsumerService implements OnModuleDestroy {
       ip_address: event.ip_address,
       user_agent: event.user_agent,
       metadata: event.metadata,
-      service_name: event.service_name || 'kafka-ingest',
+      service_name: event.service_name || `kafka-${topic}`,
       timestamp: event.timestamp || new Date().toISOString(),
     });
   }
