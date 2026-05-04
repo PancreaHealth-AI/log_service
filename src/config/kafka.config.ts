@@ -3,10 +3,9 @@ export const kafkaConfig = () => ({
   clientId: 'audit-log-service',
   groupId: 'audit-consumer-group',
   topics: [
-    'logs-auth',
-    'logs-medical',
-    'logs-access',
-    'logs-system',
+    'audit.logs',
+    'security.logs',
+    'technical.logs',
   ],
   retry: {
     initialRetryTime: 3000,

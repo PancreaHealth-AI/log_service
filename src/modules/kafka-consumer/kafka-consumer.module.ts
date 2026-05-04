@@ -1,4 +1,4 @@
-import { Module, OnModuleInit, Logger } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KafkaConsumerService } from './kafka-consumer.service';
@@ -36,11 +36,5 @@ import { AuditModule } from '../audit/audit.module';
   controllers: [KafkaEventsController],
   providers: [KafkaConsumerService],
 })
-export class KafkaConsumerModule implements OnModuleInit {
-  private readonly logger = new Logger(KafkaConsumerModule.name);
-  constructor(private readonly kafkaService: KafkaConsumerService) {}
+export class KafkaConsumerModule {}
 
-  async onModuleInit() {
-    await this.kafkaService.startListening();
-  }
-}

@@ -3,11 +3,25 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  // Kafka Microservice Configuration
+  app.connectMicroservice({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092'],
+      },
+      consumer: {
+        groupId: 'audit-consumer-group',
+      },
+    },
+  });
 
   // Swagger Configuration
   const config = new DocumentBuilder()
@@ -24,8 +38,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
 
+  await app.startAllMicroservices();
   await app.listen(process.env.PORT || 3001);
+  
   console.log(`🚀 Service started on port ${process.env.PORT || 3001}`);
   console.log(`📚 API Documentation available at http://localhost:${process.env.PORT || 3001}/api-docs`);
+  console.log(`📡 Kafka Microservice listening...`);
 }
 bootstrap();
+

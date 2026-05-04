@@ -1,53 +1,64 @@
 import { IsOptional, IsString, IsEnum, IsDateString, IsInt, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { AuditAction } from '../../../common/enums/audit-action.enum';
 import { Severity } from '../../../common/enums/severity.enum';
-import { AuditStatus } from '../../../common/enums/audit-status.enum';
+import { Type } from 'class-transformer';
 
 export class SearchLogsDto {
-  @ApiPropertyOptional({ description: 'ID utilisateur' })
+  @ApiPropertyOptional({ description: 'Filtrer par utilisateur' })
   @IsOptional()
   @IsString()
   userId?: string;
 
-  @ApiPropertyOptional({ enum: AuditAction, description: 'Action' })
+  @ApiPropertyOptional({ description: 'Filtrer par action' })
   @IsOptional()
-  @IsEnum(AuditAction)
-  action?: AuditAction;
+  @IsString()
+  action?: string;
 
-  @ApiPropertyOptional({ description: 'Ressource' })
+  @ApiPropertyOptional({ description: 'Filtrer par ressource' })
   @IsOptional()
   @IsString()
   resource?: string;
 
-  @ApiPropertyOptional({ description: 'Date de début', format: 'date-time' })
+  @ApiPropertyOptional({ description: 'Filtrer par cible' })
   @IsOptional()
-  @IsDateString()
-  dateFrom?: string;
+  @IsString()
+  target?: string;
 
-  @ApiPropertyOptional({ description: 'Date de fin', format: 'date-time' })
-  @IsOptional()
-  @IsDateString()
-  dateTo?: string;
-
-  @ApiPropertyOptional({ enum: Severity, description: 'Sévérité' })
+  @ApiPropertyOptional({ enum: Severity, description: 'Filtrer par sévérité' })
   @IsOptional()
   @IsEnum(Severity)
   severity?: Severity;
 
-  @ApiPropertyOptional({ enum: AuditStatus, description: 'Statut' })
+  @ApiPropertyOptional({ description: 'Filtrer par type d\'événement' })
   @IsOptional()
-  @IsEnum(AuditStatus)
-  status?: AuditStatus;
+  @IsString()
+  eventType?: string;
+
+  @ApiPropertyOptional({ description: 'Filtrer par service' })
+  @IsOptional()
+  @IsString()
+  service?: string;
+
+  @ApiPropertyOptional({ description: 'Date de début (ISO)', format: 'date-time' })
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @ApiPropertyOptional({ description: 'Date de fin (ISO)', format: 'date-time' })
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
 
   @ApiPropertyOptional({ example: 1, description: 'Numéro de page' })
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   page?: number = 1;
 
-  @ApiPropertyOptional({ example: 20, description: 'Nombre de résultats par page' })
+  @ApiPropertyOptional({ example: 20, description: 'Résultats par page' })
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   limit?: number = 20;

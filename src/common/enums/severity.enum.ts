@@ -1,6 +1,6 @@
 export enum Severity {
-  INFO = 'INFO',
-  WARNING = 'WARNING',
-  ERROR = 'ERROR',
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
   CRITICAL = 'CRITICAL',
 }

@@ -6,7 +6,7 @@ export const elasticsearchConfig = () => ({
   },
   indices: {
     audit_logs: 'audit_logs',
+    security_logs: 'security_logs',
     technical_logs: 'technical_logs',
-    security_alerts: 'security_alerts',
   },
 });

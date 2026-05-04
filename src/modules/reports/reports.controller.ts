@@ -1,26 +1,24 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReportsService } from './reports.service';
 import { GenerateReportDto } from '../audit/dto/generate-report.dto';
 
-@ApiTags('Reports')
-@Controller('audit')
+@ApiTags('Logs')
+@Controller('logs/reports')
 export class ReportsController {
   constructor(private readonly service: ReportsService) {}
 
-  @Post('reports/generate')
-  @ApiOperation({ summary: 'Générer un rapport d\'audit' })
-  @ApiBody({ type: GenerateReportDto })
+  @Post('generate')
+  @ApiOperation({ summary: 'Générer un rapport d\'activité' })
   @ApiResponse({ status: 200, description: 'Rapport généré' })
-  async generateReport(@Body() dto: GenerateReportDto) {
+  async generate(@Body() dto: GenerateReportDto) {
     return this.service.generate(dto);
   }
 
   @Post('export')
   @ApiOperation({ summary: 'Exporter les données personnelles (RGPD)' })
-  @ApiBody({ type: GenerateReportDto })
-  @ApiResponse({ status: 200, description: 'Export RGPD effectué' })
-  async exportData(@Body() dto: GenerateReportDto) {
+  @ApiResponse({ status: 200, description: 'Données exportées' })
+  async export(@Body() dto: GenerateReportDto) {
     return this.service.exportGdpr(dto);
   }
 }

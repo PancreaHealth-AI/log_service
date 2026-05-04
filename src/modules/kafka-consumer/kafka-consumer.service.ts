@@ -1,52 +1,27 @@
-import { Injectable, Inject, OnModuleDestroy, Logger } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Injectable, Logger } from '@nestjs/common';
 import { AuditService } from '../audit/audit.service';
-import { kafkaConfig } from '../../config/kafka.config';
+import { LogType } from '../../common/enums/log-type.enum';
 
 @Injectable()
-export class KafkaConsumerService implements OnModuleDestroy {
+export class KafkaConsumerService {
   private readonly logger = new Logger(KafkaConsumerService.name);
-  private subscribed = false;
 
   constructor(
-    @Inject('KAFKA_CLIENT') private readonly kafkaClient: ClientKafka,
     private readonly auditService: AuditService,
   ) {}
 
-  async startListening() {
-    try {
-      const config = kafkaConfig();
-      for (const topic of config.topics) {
-        this.kafkaClient.subscribeToResponseOf(topic);
-        this.logger.log(`Subscribed to topic: ${topic}`);
-      }
-      await this.kafkaClient.connect();
-      this.subscribed = true;
-    } catch (err) {
-      this.logger.error(
-        `Kafka connection failed, service continues without Kafka`,
-        err.stack,
-      );
-    }
-  }
-
-  async onModuleDestroy() {
-    if (this.subscribed) await this.kafkaClient.close();
-  }
-
   async handleIncomingMessage(topic: string, message: any) {
     const event = message.value || message;
-    this.logger.log(`📥 Message received from Kafka [${topic}]: ${event.action} for ${event.resource}`);
-    
-    await this.auditService.createLog({
-      user_id: event.userId,
-      action: event.action,
-      resource: event.resource,
-      ip_address: event.ip_address,
-      user_agent: event.user_agent,
-      metadata: event.metadata,
-      service_name: event.service_name || `kafka-${topic}`,
-      timestamp: event.timestamp || new Date().toISOString(),
-    });
+    this.logger.log(`📥 Log received via Kafka [${topic}]: ${event.eventType || event.action}`);
+
+    // Forcer le logType en fonction du topic si manquant
+    if (!event.logType) {
+      if (topic === 'audit.logs') event.logType = LogType.AUDIT;
+      else if (topic === 'security.logs') event.logType = LogType.SECURITY;
+      else if (topic === 'technical.logs') event.logType = LogType.TECHNICAL;
+    }
+
+    await this.auditService.createLog(event);
   }
 }
+

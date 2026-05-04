@@ -1,53 +1,53 @@
-import { IsString, IsOptional, IsEnum, IsObject } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsObject, IsDateString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { AuditAction } from '../../../common/enums/audit-action.enum';
+import { LogType } from '../../../common/enums/log-type.enum';
 import { Severity } from '../../../common/enums/severity.enum';
-import { AuditStatus } from '../../../common/enums/audit-status.enum';
 
-export class CreateAuditLogDto {
-  @ApiProperty({ description: 'ID de l\'utilisateur' })
+export class CreateLogDto {
+  @ApiProperty({ enum: LogType, description: 'Type global du log' })
+  @IsEnum(LogType)
+  logType: LogType;
+
+  @ApiProperty({ description: 'Événement métier précis' })
   @IsString()
-  user_id: string;
+  eventType: string;
 
-  @ApiProperty({ enum: AuditAction, description: 'Action auditée' })
-  @IsEnum(AuditAction)
-  action: AuditAction;
+  @ApiProperty({ description: 'Action principale' })
+  @IsString()
+  action: string;
 
-  @ApiProperty({ description: 'Ressource affectée' })
+  @ApiProperty({ description: 'ID de l\'utilisateur acteur' })
+  @IsString()
+  userId: string;
+
+  @ApiProperty({ description: 'Entité concernée' })
   @IsString()
   resource: string;
 
-  @ApiPropertyOptional({ description: 'Nom du service' })
+  @ApiPropertyOptional({ description: 'ID de la ressource' })
   @IsOptional()
   @IsString()
-  service_name?: string;
+  resourceId?: string;
 
-  @ApiPropertyOptional({ enum: AuditStatus, description: 'Statut du log' })
-  @IsOptional()
-  @IsEnum(AuditStatus)
-  status?: AuditStatus;
-
-  @ApiPropertyOptional({ description: 'Timestamp du log' })
+  @ApiPropertyOptional({ description: 'Cible de l\'action' })
   @IsOptional()
   @IsString()
+  target?: string;
+
+  @ApiProperty({ enum: Severity, description: 'Niveau de criticité' })
+  @IsEnum(Severity)
+  severity: Severity;
+
+  @ApiProperty({ description: 'Nom du service émetteur' })
+  @IsString()
+  service: string;
+
+  @ApiPropertyOptional({ description: 'Timestamp du log (ISO)' })
+  @IsOptional()
+  @IsDateString()
   timestamp?: string;
 
-  @ApiPropertyOptional({ description: 'Adresse IP' })
-  @IsOptional()
-  @IsString()
-  ip_address?: string;
-
-  @ApiPropertyOptional({ description: 'User Agent' })
-  @IsOptional()
-  @IsString()
-  user_agent?: string;
-
-  @ApiPropertyOptional({ enum: Severity, description: 'Niveau de sévérité' })
-  @IsOptional()
-  @IsEnum(Severity)
-  severity?: Severity;
-
-  @ApiPropertyOptional({ description: 'Métadonnées additionnelles', type: Object })
+  @ApiPropertyOptional({ description: 'Données supplémentaires', type: Object })
   @IsOptional()
   @IsObject()
   metadata?: Record<string, any>;
