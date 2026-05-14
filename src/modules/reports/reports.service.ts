@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '../../infrastructure/elasticsearch/elasticsearch.service';
 import { GenerateReportDto } from '../audit/dto/generate-report.dto';
+import { elasticsearchConfig } from '../../config/elasticsearch.config';
 
 @Injectable()
 export class ReportsService {
+  private readonly config = elasticsearchConfig();
+
   constructor(private readonly elastic: ElasticsearchService) {}
 
   async generate(dto: GenerateReportDto) {
     const must: any[] = [];
-    if (dto.userId) must.push({ term: { 'user_id': dto.userId } });
+    if (dto.userId) must.push({ term: { 'userId': dto.userId } });
     if (dto.action) must.push({ term: { 'action': dto.action } });
     if (dto.dateFrom || dto.dateTo) {
       const range: any = {};
@@ -18,7 +21,7 @@ export class ReportsService {
     }
     const query = { bool: { must } };
     const result = await this.elastic.search({
-      index: 'audit_logs',
+      index: this.config.indices.audit_logs,
       query,
       size: 10000,
     });
@@ -28,7 +31,7 @@ export class ReportsService {
   }
 
   async exportGdpr(dto: GenerateReportDto) {
-    // Logique identique ou avec filtres spécifiques aux données personnelles
     return this.generate(dto);
   }
 }
+

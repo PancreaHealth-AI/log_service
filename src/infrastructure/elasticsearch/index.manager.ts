@@ -35,7 +35,9 @@ export class IndexManager {
               },
             },
           } as any);
-          this.logger.log(`Created index: ${index}`);
+          this.logger.log(`✅ Created index with keyword mappings: ${index}`);
+        } else {
+          this.logger.log(`ℹ️ Index already exists: ${index} (Mappings not updated automatically)`);
         }
       }
     } catch (error) {
