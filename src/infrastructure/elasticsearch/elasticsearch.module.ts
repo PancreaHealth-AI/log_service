@@ -11,7 +11,7 @@ import { elasticsearchConfig } from '../../config/elasticsearch.config';
     NestElasticModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
-        node: config.get('ELASTICSEARCH_NODE') || 'http://localhost:9200',
+        node: config.get('ELASTICSEARCH_NODE') || 'http://klodit.app:9200',
         auth: {
           username: config.get('ELASTICSEARCH_USER') || '',
           password: config.get('ELASTICSEARCH_PASS') || '',

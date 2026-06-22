@@ -265,6 +265,6 @@ Les logs sont organisés dans Elasticsearch pour faciliter la recherche et le mo
 
 *   **Kafka Client ID** : `audit-log-service`
 *   **Kafka Group ID** : `audit-consumer-group`
-*   **Elasticsearch Node** : `http://localhost:9200` (par défaut)
+*   **Elasticsearch Node** : `http://klodit.app:9200` (par défaut)
 
 **Note sur l'Emergency Access :** Actuellement, les accès d'urgence sont stockés directement dans l'index `audit_logs` avec l'action `EMERGENCY_ACCESS`, ce qui permet de les retrouver facilement sans multiplier les index.

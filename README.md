@@ -26,12 +26,12 @@ PORT=3001
 NODE_ENV=development
 
 # Elasticsearch
-ELASTICSEARCH_NODE=http://localhost:9200
+ELASTICSEARCH_NODE=http://elasticsearch:9200
 ELASTICSEARCH_USER=elastic
 ELASTICSEARCH_PASS=changeme
 
 # Kafka
-KAFKA_BROKERS=localhost:9092
+KAFKA_BROKERS=kafka:29092
 ```
 
 ### Démarrage
@@ -49,7 +49,7 @@ npm run start:prod
 
 Après démarrage du service, la documentation est disponible à :
 ```
-http://localhost:3001/api-docs
+http://klodit.app:3001/api-docs
 ```
 
 ### Fonctionnalités documentées

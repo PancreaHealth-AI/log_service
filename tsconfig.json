@@ -50,7 +50,7 @@ Digest: sha256:d10bc493488da1f2d0a46b73d0746108bafe394431476159d64dee30ff77b3fc
 Status: Downloaded newer image for docker.elastic.co/elasticsearch/elasticsearch:7.17.23
 b5c303118df2b135bcfa0586124df011953f4751d735427f88283316c8795981
 
- curl http://localhost:9200
+ curl http://klodit.app:9200
 {
   "name" : "b5c303118df2",
   "cluster_name" : "docker-cluster",
@@ -74,7 +74,7 @@ b5c303118df2b135bcfa0586124df011953f4751d735427f88283316c8795981
 
 docker run -d --name kibana \
   -p 5601:5601 \
-  -e "ELASTICSEARCH_HOSTS=http://localhost:9200" \
+  -e "ELASTICSEARCH_HOSTS=http://klodit.app:9200" \
   docker.elastic.co/kibana/kibana:7.17.23
 
 */

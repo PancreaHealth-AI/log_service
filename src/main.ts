@@ -71,7 +71,7 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚀 logs_service started on port ${port}`);
-  logger.log(`📚 Swagger docs: http://localhost:${port}/api-docs`);
+  logger.log(`📚 Swagger docs: http://klodit.app:${port}/api-docs`);
 }
 
 bootstrap().catch((err) => {
