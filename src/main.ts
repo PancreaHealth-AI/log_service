@@ -42,10 +42,11 @@ async function bootstrap() {
     .addTag('Security Alerts', 'Alertes de sécurité')
     .addTag('Reports', 'Génération de rapports')
     .addTag('Statistics', 'Statistiques')
+    .addServer('/api/v1/log')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api/docs/log', app, document);
 
   // ── Start Kafka consumer in background — non-blocking ──
   // If Kafka is down, only event consumption is degraded; the HTTP API stays alive.
